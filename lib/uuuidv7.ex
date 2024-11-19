@@ -1,4 +1,4 @@
-defmodule UUUIDv7 do
+defmodule UUIDv7 do
   @moduledoc """
   UUUIDv7 for Elixir.
 
@@ -15,6 +15,20 @@ defmodule UUUIDv7 do
     <<1, 142, 144, 216, 6, 232, 127, 159, 191, 215, 103, 48, 186, 152, 165, 27>>
 
   """
+  if Code.ensure_loaded?(Ecto.Type) do
+    use Ecto.Type
+
+    @impl true
+    def autogenerate(), do: generate()
+    @impl true
+    def type(), do: :uuid
+    @impl true
+    defdelegate cast(term), to: Ecto.UUID
+    @impl true
+    defdelegate dump(term), to: Ecto.UUID
+    @impl true
+    def load(<<_::128>> = raw_uuid), do: {:ok, encode(raw_uuid)}
+  end
 
   @typedoc """
   A hex-encoded UUID string.
